@@ -2,7 +2,7 @@ var Cell = require('./Cell');
 
 function EjectedMass() {
     Cell.apply(this, Array.prototype.slice.call(arguments));
-	
+	this.mass = 100;
     this.cellType = 3;
 }
 
