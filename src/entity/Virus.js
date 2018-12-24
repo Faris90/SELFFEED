@@ -2,7 +2,7 @@ var Cell = require('./Cell');
 
 function Virus() {
     Cell.apply(this, Array.prototype.slice.call(arguments));
-	this.color = 0;
+	
     this.cellType = 2;
 }
 
@@ -29,12 +29,30 @@ Virus.prototype.feed = function(feeder,gameServer) {
 // Main Functions
 
 Virus.prototype.onConsume = function(consumer,gameServer) {
-       var len = client.cells.length;
-    for (var i = 0; i < len; i++) {
-	    var cell = client.cells[i];
-	    cell.position.x = Math.floor(Math.random() * (gameServer.config.borderRight - gameServer.config.borderLeft)) + gameServer.config.borderLeft
-  cell.position.y = = Math.floor(Math.random() * (gameServer.config.borderBottom - gameServer.config.borderTop)) + gameServer.config.borderTop
+    var client = consumer.owner;
+    var maxSplits = Math.floor(consumer.mass/16) - 1; // Maximum amount of splits
+    var numSplits = gameServer.config.playerMaxCells - client.cells.length; // Get number of splits
+    numSplits = Math.min(numSplits,maxSplits);
+    var splitMass = Math.min(consumer.mass/(numSplits + 1), 32); // Maximum size of new splits
+    
+    // Cell consumes mass before splitting
+    consumer.addMass(this.mass);
+    
+    // Cell cannot split any further
+    if (numSplits <= 0) {
+        return;
     }
+    
+    // Big cells will split into cells larger than 32 mass (1/4 of their mass)
+    var bigSplits = 0;
+    var endMass = consumer.mass - (numSplits * splitMass);
+    if ((endMass > 300) && (numSplits > 0)) {
+        bigSplits++;
+        numSplits--;
+    } 
+    if ((endMass > 1200) && (numSplits > 0)) {
+        bigSplits++;
+        numSplits--;
     }
     
     // Splitting
