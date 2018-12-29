@@ -29,7 +29,7 @@ Cell.prototype.getName = function() {
 	if (this.owner) {
 		return this.owner.name;
 	} else {
-		return "";
+		return "gum";
 	}
 }
 
